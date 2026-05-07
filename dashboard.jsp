@@ -1,0 +1,333 @@
+<%@ page import="java.util.List" %>
+<%@ page import="com.photography.model.Booking" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photography Booking System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class='bx bx-camera'></i>
+            <span>PhotoBook</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item active"><a href="<%= request.getContextPath() %>/dashboard" class="nav-link"><i class='bx bx-home-alt'></i><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/addBooking" class="nav-link"><i class='bx bx-plus-circle'></i><span>Add Booking</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/viewBookings" class="nav-link"><i class='bx bx-list-ul'></i><span>View Bookings</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/packages.jsp" class="nav-link"><i class='bx bx-category'></i><span>Packages</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/reports.jsp" class="nav-link"><i class='bx bx-bar-chart-alt-2'></i><span>Reports</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/earnings.jsp" class="nav-link"><i class='bx bx-wallet'></i><span>Earnings</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/profile.jsp" class="nav-link"><i class='bx bx-user'></i><span>Profile</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/logout" class="nav-link"><i class='bx bx-log-out'></i><span>Logout</span></a></li>
+        </ul>
+
+        <div class="sidebar-promo">
+            <div class="promo-card">
+                <img src="https://illustrations.popsy.co/blue/photographer.svg" alt="Promo">
+                <p class="promo-text">Manage your bookings easily and grow your business!</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <i class='bx bx-menu menu-toggle'></i>
+            </div>
+            <div class="topbar-right">
+                <div class="notification">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=John+Doe&background=random" alt="User">
+                    <span class="user-name">John Doe <i class='bx bx-chevron-down'></i></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Container -->
+        <div class="dashboard-container">
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                    <p>Welcome back, John Doe!</p>
+                </div>
+                <div class="date-picker">
+                    <i class='bx bx-calendar'></i>
+                    <span>19 May 2025, Monday</span>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <div class="metric-card card-blue">
+                    <div class="metric-icon">
+                        <i class='bx bx-book-content'></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3>Total Bookings</h3>
+                        <div class="amount"><%= request.getAttribute("totalBookings") != null ? request.getAttribute("totalBookings") : "0" %></div>
+                        <div class="period">This Month</div>
+                    </div>
+                </div>
+                
+                <div class="metric-card card-green">
+                    <div class="metric-icon">
+                        <i class='bx bx-down-arrow-alt'></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3>Total Revenue</h3>
+                        <div class="amount">₹ <%= request.getAttribute("totalRevenue") != null ? request.getAttribute("totalRevenue") : "0" %></div>
+                        <div class="period">This Month</div>
+                    </div>
+                </div>
+
+                <div class="metric-card card-orange">
+                    <div class="metric-icon">
+                        <i class='bx bx-group'></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3>New Customers</h3>
+                        <div class="amount"><%= request.getAttribute("newCustomers") != null ? request.getAttribute("newCustomers") : "0" %></div>
+                        <div class="period">This Month</div>
+                    </div>
+                </div>
+
+                <div class="metric-card card-purple">
+                    <div class="metric-icon">
+                        <i class='bx bx-money'></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3>Avg Booking Value</h3>
+                        <div class="amount">₹ <%= request.getAttribute("avgBookingValue") != null ? String.format("%.2f", request.getAttribute("avgBookingValue")) : "0" %></div>
+                        <div class="period">This Month</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- First Charts Row -->
+            <div class="charts-grid">
+                <!-- Booking Overview (Pie Chart) -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Booking Overview</h2>
+                    </div>
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <div class="chart-container" style="flex: 1; max-width: 200px;">
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px;">
+                                <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #3b82f6;"></span> Wedding</span>
+                                <strong>50</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px;">
+                                <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444;"></span> Portrait</span>
+                                <strong>35</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px;">
+                                <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b;"></span> Event</span>
+                                <strong>25</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px;">
+                                <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981;"></span> Product</span>
+                                <strong>14</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-full-report" onclick="window.location.href='<%= request.getContextPath() %>/reports.jsp'">
+                        View Full Report <i class='bx bx-chevron-right'></i>
+                    </button>
+                </div>
+
+                <!-- Recent Bookings (Table) -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Bookings</h2>
+                        <button class="btn-view-all" onclick="window.location.href='<%= request.getContextPath() %>/viewBookings'">View All</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Client</th>
+                                <th style="text-align: right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% 
+                                List<Booking> recentBookings = (List<Booking>) request.getAttribute("recentBookings");
+                                if (recentBookings != null) {
+                                    for (Booking b : recentBookings) {
+                                        String iconClass = "bg-wedding";
+                                        String icon = "bx-diamond";
+                                        if ("Portrait".equals(b.getCategory())) { iconClass = "bg-portrait"; icon = "bx-user-circle"; }
+                                        if ("Event".equals(b.getCategory())) { iconClass = "bg-event"; icon = "bx-party"; }
+                                        if ("Product".equals(b.getCategory())) { iconClass = "bg-product"; icon = "bx-box"; }
+                            %>
+                            <tr>
+                                <td><%= b.getDate() %></td>
+                                <td>
+                                    <div class="category-badge">
+                                        <div class="category-icon <%= iconClass %>"><i class='bx <%= icon %>'></i></div>
+                                        <%= b.getCategory() %>
+                                    </div>
+                                </td>
+                                <td><%= b.getClientName() %></td>
+                                <td style="text-align: right;" class="amount-income">₹ <%= b.getAmount() %></td>
+                            </tr>
+                            <% 
+                                    }
+                                } 
+                            %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Second Charts Row -->
+            <div class="charts-grid">
+                <!-- Monthly Trend (Line Chart) -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Monthly Trend</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Packages (Bar Chart substitute with progress bars) -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Top Packages</h2>
+                    </div>
+                    <div class="progress-list" style="margin-top: 20px;">
+                        <div class="progress-item">
+                            <div class="progress-label">Wedding Pro</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 85%; background-color: #3b82f6;"></div>
+                            </div>
+                            <div class="progress-amount">₹ 1,80,000</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">Pre-Wedding</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 65%; background-color: #ef4444;"></div>
+                            </div>
+                            <div class="progress-amount">₹ 65,000</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">Corporate</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 45%; background-color: #f59e0b;"></div>
+                            </div>
+                            <div class="progress-amount">₹ 45,000</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">Maternity</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 30%; background-color: #10b981;"></div>
+                            </div>
+                            <div class="progress-amount">₹ 25,000</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">Basic Portrait</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 20%; background-color: #8b5cf6;"></div>
+                            </div>
+                            <div class="progress-amount">₹ 15,000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Overview Pie Chart
+        const overviewCtx = document.getElementById('overviewChart').getContext('2d');
+        new Chart(overviewCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Wedding', 'Portrait', 'Event', 'Product'],
+                datasets: [{
+                    data: [50, 35, 25, 14],
+                    backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '65%',
+                plugins: {
+                    legend: { display: false }
+                },
+                maintainAspectRatio: false
+            }
+        });
+
+        // Monthly Trend Line Chart
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [50000, 80000, 110000, 130000, 170000, 120000],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#3b82f6',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5], color: '#f1f5f9' },
+                        ticks: {
+                            callback: function(value) { return '₹ ' + (value/1000) + 'k'; },
+                            color: '#8a92a6',
+                            font: { size: 11 }
+                        },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#8a92a6', font: { size: 11 } },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
