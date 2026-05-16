@@ -17,10 +17,10 @@
             <li class="nav-item"><a href="<%= request.getContextPath() %>/dashboard" class="nav-link"><i class='bx bx-home-alt'></i><span>Dashboard</span></a></li>
             <li class="nav-item"><a href="<%= request.getContextPath() %>/addBooking" class="nav-link"><i class='bx bx-plus-circle'></i><span>Add Booking</span></a></li>
             <li class="nav-item active"><a href="<%= request.getContextPath() %>/viewBookings" class="nav-link"><i class='bx bx-list-ul'></i><span>View Bookings</span></a></li>
-            <li class="nav-item"><a href="<%= request.getContextPath() %>/packages" class="nav-link"><i class='bx bx-category'></i><span>Packages</span></a></li>
-            <li class="nav-item"><a href="<%= request.getContextPath() %>/reports" class="nav-link"><i class='bx bx-bar-chart-alt-2'></i><span>Reports</span></a></li>
-            <li class="nav-item"><a href="<%= request.getContextPath() %>/earnings" class="nav-link"><i class='bx bx-wallet'></i><span>Earnings</span></a></li>
-            <li class="nav-item"><a href="<%= request.getContextPath() %>/profile" class="nav-link"><i class='bx bx-user'></i><span>Profile</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/packages.jsp" class="nav-link"><i class='bx bx-category'></i><span>Packages</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/reports.jsp" class="nav-link"><i class='bx bx-bar-chart-alt-2'></i><span>Reports</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/earnings.jsp" class="nav-link"><i class='bx bx-wallet'></i><span>Earnings</span></a></li>
+            <li class="nav-item"><a href="<%= request.getContextPath() %>/profile.jsp" class="nav-link"><i class='bx bx-user'></i><span>Profile</span></a></li>
             <li class="nav-item"><a href="<%= request.getContextPath() %>/logout" class="nav-link"><i class='bx bx-log-out'></i><span>Logout</span></a></li>
         </ul>
     </aside>
